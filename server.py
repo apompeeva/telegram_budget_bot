@@ -3,6 +3,7 @@ from aiogram import Bot, Dispatcher, executor, types
 from middleware import AccessMiddleware
 import expenses
 import sheets
+from categories import Categories
 
 
 API_TOKEN = os.getenv('API_TOKEN')
@@ -24,15 +25,6 @@ async def send_welcome(message: types.Message):
         "За текущий месяц: /month\n"
         "Последние внесённые расходы: /expenses\n"
         "Категории трат: /categories")
-
-
-@dp.message_handler()
-async def add_expense(message: types.Message):
-    """Добавляет новый расход"""
-    expense_message = expenses.add_expense(message)
-    sheets.add_transaction(expense_message)
-    sheets.add_expense_to_table(expense_message.expense)
-    await message.answer(expense_message.expense.get_answer())
 
 
 async def del_expense(message: types.Message):
@@ -61,9 +53,17 @@ async def get_month_expenses(message: types.Message):
 @dp.message_handler(commands=['categories'])
 async def get_all_categories(message: types.Message):
     """Выводит список категорий с алиасами и лимитами"""
+    answer = Categories().get_all_categories()
+    await message.answer('\n'.join([category.get_category_data() for category in answer]))
 
-    await message.answer("Расходы за месяц")
 
+@dp.message_handler()
+async def add_expense(message: types.Message):
+    """Добавляет новый расход"""
+    expense_message = expenses.add_expense(message)
+    sheets.add_transaction(expense_message)
+    sheets.add_expense_to_table(expense_message.expense)
+    await message.answer(expense_message.expense.get_answer())
 
 
 if __name__ == '__main__':

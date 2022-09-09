@@ -12,6 +12,9 @@ class Category:
         self.description = category['Description']
         self.aliases = category['Aliases'].split(", ")
 
+    def get_category_data(self):
+        return '\n' + self.code_name + ' - ' + self.description + '\n' + ', '.join([str(elem) for elem in self.aliases])
+
 
 class Categories:
 
@@ -38,3 +41,4 @@ class Categories:
         if not finded:
             finded = other_category
         return finded
+

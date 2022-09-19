@@ -47,7 +47,8 @@ async def get_week_expenses(message: types.Message):
 @dp.message_handler(commands=['month'])
 async def get_month_expenses(message: types.Message):
     """Выводит расходы за месяц"""
-    await message.answer("Расходы за месяц")
+    month, answer = expenses.get_month_statistics()
+    await message.answer(f"Расходы за {month}" + '\n' + ('\n'.join(answer)))
 
 
 @dp.message_handler(commands=['categories'])

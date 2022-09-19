@@ -4,6 +4,7 @@ import datetime
 from bs4 import BeautifulSoup
 from categories import Category, Categories
 from typing import NamedTuple
+from sheets import get_all_values, get_current_month_str, budget_sheet
 
 
 class Expense(NamedTuple):
@@ -67,6 +68,18 @@ def _get_exchange_rate() -> float:
 def convert_lira_to_usd(lira_amount: int) -> float:
     current_rate = _get_exchange_rate()
     return lira_amount * current_rate
+
+
+def get_month_statistics():
+    values = get_all_values(budget_sheet)
+    month_name = get_current_month_str()
+    statistic = []
+    for value in values:
+        statistic.append(value['Category'] + ': ' + str(value[month_name]) + ' из ' + str(value['Limit']))
+    return month_name, statistic
+
+
+
 
 
 

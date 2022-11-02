@@ -14,6 +14,11 @@ def get_value(cell: (int, int)) -> str:
     return data
 
 
+def get_range_of_values(sheet, range):
+    values = sheet.get(range)
+    return values
+
+
 def get_all_values(sheet):
     values = sheet.get_all_records()
     return values

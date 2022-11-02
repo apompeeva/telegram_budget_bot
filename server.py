@@ -21,27 +21,32 @@ async def send_welcome(message: types.Message):
     await message.answer(
         "Бот для учёта финансов\n\n"
         "Добавить расход: 250 такси\n"
-        "Сегодняшняя статистика: /today\n"
         "За текущий месяц: /month\n"
-        "Последние внесённые расходы: /expenses\n"
+        "Последние внесённые расходы: /last\n"
         "Категории трат: /categories")
 
 
+@dp.message_handler(lambda message: message.text.startswith('/del'))
 async def del_expense(message: types.Message):
     """Удаляет расход"""
     await message.answer("")
 
 
-@dp.message_handler(commands=['today'])
-async def get_today_expenses(message: types.Message):
-    """Выводит расходы за сегодня"""
-    await message.answer("Расходы за сегодня")
+@dp.message_handler(commands=['last'])
+async def get_last_ten_transaction(message: types.Message):
+    """Выводит последние 10 транзакций"""
+    last_expenses = expenses.get_last_ten_expenses()
+    if not last_expenses:
+        await message.answer("Расходы ещё не заведены")
+        return
 
-
-@dp.message_handler(commands=['week'])
-async def get_week_expenses(message: types.Message):
-    """Выводит расходы за неделю"""
-    await message.answer("Расходы за неделю")
+    last_expenses_rows = [
+        f"{expense.amount} руб. на {expense.category} — нажми "
+        f"/del для удаления"
+        for expense in last_expenses]
+    answer_message = "Последние сохранённые траты:\n\n* " + "\n\n* " \
+        .join(last_expenses_rows)
+    await message.answer(answer_message)
 
 
 @dp.message_handler(commands=['month'])

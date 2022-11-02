@@ -13,6 +13,7 @@ class Category:
         self.aliases = category['Aliases'].split(", ")
 
     def get_category_data(self):
+        "Возвращает информацию о категррии в виде строки"
         return '\n' + self.code_name + ' - ' + self.description + '\n' + ', '.join([str(elem) for elem in self.aliases])
 
 

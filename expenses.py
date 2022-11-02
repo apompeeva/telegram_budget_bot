@@ -4,7 +4,7 @@ import datetime
 from bs4 import BeautifulSoup
 from categories import Category, Categories
 from typing import NamedTuple
-from sheets import get_all_values, get_current_month_str, budget_sheet
+from sheets import get_all_values, get_current_month_str, budget_sheet, get_range_of_values, transaction_sheet
 
 
 class Expense(NamedTuple):
@@ -77,6 +77,13 @@ def get_month_statistics():
     for value in values:
         statistic.append(value['Category'] + ': ' + str(value[month_name]) + ' из ' + str(value['Limit']))
     return month_name, statistic
+
+
+def get_last_ten_expenses():
+    last_transaction = get_range_of_values(transaction_sheet, 'A2:E11')
+    last_expenses = [Expense(amount=transaction[0], category=transaction[1], currency='currency') for transaction in last_transaction]
+    return last_expenses
+
 
 
 

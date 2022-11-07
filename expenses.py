@@ -38,7 +38,7 @@ class Message(NamedTuple):
 
 # TO DO: добавить исключение, если сообщение распозналось некорректно
 def parse_message(raw_message: str) -> Expense:
-    match = re.match(r'(\d+)(\$*) (.+)', raw_message)
+    match = re.match(r'(\d+)(\$*) *(.+)', raw_message)
     if not match.group(2):
         currency = 'lira'
     else:

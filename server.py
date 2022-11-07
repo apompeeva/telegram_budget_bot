@@ -29,7 +29,9 @@ async def send_welcome(message: types.Message):
 @dp.message_handler(lambda message: message.text.startswith('/del'))
 async def del_expense(message: types.Message):
     """Удаляет расход"""
-    await message.answer("")
+    expense = expenses.parse_message(message.text[4::])
+    sheets.delete_expense_from_table(expense)
+    await message.answer(f"Удалил {message.text[4::]}")
 
 
 @dp.message_handler(commands=['last'])
@@ -42,7 +44,7 @@ async def get_last_ten_transaction(message: types.Message):
 
     last_expenses_rows = [
         f"{expense.amount} руб. на {expense.category} — нажми "
-        f"/del для удаления"
+        f"/del{expense.amount}{expense.category} для удаления"
         for expense in last_expenses]
     answer_message = "Последние сохранённые траты:\n\n* " + "\n\n* " \
         .join(last_expenses_rows)

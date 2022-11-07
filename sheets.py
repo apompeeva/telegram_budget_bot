@@ -50,6 +50,16 @@ def add_expense_to_table(expense):
     budget_sheet.update_cell(*cell_address, str(new_data))
 
 
+def delete_expense_from_table(expense):
+    cell_address = get_cell_address(expense.get_category())
+    current_value = get_value(cell_address)
+    try:
+        new_data = int(current_value) - int(expense.get_amount())
+    except TypeError:
+        print("Какая то дичь с типами")
+    budget_sheet.update_cell(*cell_address, str(new_data))
+
+
 def add_transaction(transaction):
     transaction_sheet.insert_row(transaction.get_message_data(), index=2, value_input_option='USER_ENTERED')
 

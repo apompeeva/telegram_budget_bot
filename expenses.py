@@ -10,7 +10,6 @@ from sheets import get_all_values, get_current_month_str, budget_sheet, get_rang
 class Expense(NamedTuple):
     amount: float
     category: Category
-    currency: str
 
     def get_amount(self):
         return self.amount
@@ -19,7 +18,7 @@ class Expense(NamedTuple):
         return self.category.code_name
 
     def get_answer(self):
-        return str(self.amount) + " " + str(self.currency) + " " + str(self.category.code_name)
+        return str(self.amount) + " "  + str(self.category.code_name)
 
 
 class Message(NamedTuple):
@@ -38,15 +37,12 @@ class Message(NamedTuple):
 
 # TO DO: добавить исключение, если сообщение распозналось некорректно
 def parse_message(raw_message: str) -> Expense:
-    match = re.match(r'(\d+)(\$*) *(.+)', raw_message)
-    if not match.group(2):
-        currency = 'lira'
-    else:
-        currency = 'usd'
-    amount = float(match.group(1).replace(" ", ""))
-    category = Categories().get_category(match.group(3))
+    match = re.match(r'(\d+) *(.+)', raw_message)
 
-    return Expense(amount=amount, category=category, currency=currency)
+    amount = float(match.group(1).replace(" ", ""))
+    category = Categories().get_category(match.group(2))
+
+    return Expense(amount=amount, category=category)
 
 
 def add_expense(message):
@@ -55,19 +51,6 @@ def add_expense(message):
     date = datetime.date.today()
     expense = parse_message(message.text)
     return Message(user_id=user_id, user_name=user_name, message_date=date, expense=expense, raw_message=message.text)
-
-
-def _get_exchange_rate() -> float:
-    url = 'https://freecurrencyrates.com/ru/convert-TRY-USD'
-    full_page = requests.get(url)
-    soup = BeautifulSoup(full_page.content, 'html.parser')
-    convert = soup.findAll("span", class_='src-entry-to')
-    return float(convert[0].text)
-
-
-def convert_lira_to_usd(lira_amount: int) -> float:
-    current_rate = _get_exchange_rate()
-    return lira_amount * current_rate
 
 
 def get_month_statistics():
@@ -81,10 +64,10 @@ def get_month_statistics():
 
 def get_last_ten_expenses():
     last_transaction = get_range_of_values(transaction_sheet, 'A2:E11')
-    last_expenses = [Expense(amount=transaction[0], category=transaction[1], currency='currency') for transaction in last_transaction]
+    last_expenses = [Expense(amount=transaction[0], category=transaction[1]) for transaction in last_transaction]
     return last_expenses
 
-
+values = get_all_values(budget_sheet)
 
 
 

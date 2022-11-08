@@ -19,11 +19,11 @@ dp.middleware.setup(AccessMiddleware(ACCESS_ID))
 async def send_welcome(message: types.Message):
     """Отправляет приветственное сообщение и помощь по боту"""
     await message.answer(
-        "Бот для учёта финансов\n\n"
+        "Бот для учёта расходов\n\n"
         "Добавить расход: 250 такси\n"
         "За текущий месяц: /month\n"
         "Последние внесённые расходы: /last\n"
-        "Категории трат: /categories")
+        "Просмотреть категории: /categories")
 
 
 @dp.message_handler(lambda message: message.text.startswith('/del'))
@@ -36,7 +36,7 @@ async def del_expense(message: types.Message):
 
 @dp.message_handler(commands=['last'])
 async def get_last_ten_transaction(message: types.Message):
-    """Выводит последние 10 транзакций"""
+    """Выводит последние 10 внесенных расходов"""
     last_expenses = expenses.get_last_ten_expenses()
     if not last_expenses:
         await message.answer("Расходы ещё не заведены")

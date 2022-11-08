@@ -1,5 +1,6 @@
 import gspread
 import datetime
+from typing import List, Dict
 # from expenses import Message, Expense
 
 gc = gspread.service_account()
@@ -14,12 +15,12 @@ def get_value(cell: (int, int)) -> str:
     return data
 
 
-def get_range_of_values(sheet, range):
+def get_range_of_values(sheet, range) -> List:
     values = sheet.get(range)
     return values
 
 
-def get_all_values(sheet):
+def get_all_values(sheet) -> Dict:
     values = sheet.get_all_records()
     return values
 
@@ -29,14 +30,14 @@ def find_cell_by_value(value):
     return cell
 
 
-def get_current_month_str():
+def get_current_month_name() -> str:
     current_date = datetime.datetime.now()
     return current_date.strftime("%B")
 
 
-def get_cell_address(category: str):
+def get_cell_address(category: str) -> (str, str):
     category_address = find_cell_by_value(category)
-    month_address = find_cell_by_value(get_current_month_str())
+    month_address = find_cell_by_value(get_current_month_name())
     return category_address.row, month_address.col
 
 

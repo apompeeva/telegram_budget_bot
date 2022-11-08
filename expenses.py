@@ -1,10 +1,8 @@
-import requests
 import re
 import datetime
-from bs4 import BeautifulSoup
 from categories import Category, Categories
-from typing import NamedTuple
-from sheets import get_all_values, get_current_month_str, budget_sheet, get_range_of_values, transaction_sheet
+from typing import NamedTuple, List
+from sheets import get_all_values, get_current_month_name, budget_sheet, get_range_of_values, transaction_sheet
 
 
 class Expense(NamedTuple):
@@ -18,7 +16,7 @@ class Expense(NamedTuple):
         return self.category.code_name
 
     def get_answer(self):
-        return str(self.amount) + " "  + str(self.category.code_name)
+        return str(self.amount) + " " + str(self.category.code_name)
 
 
 class Message(NamedTuple):
@@ -45,7 +43,7 @@ def parse_message(raw_message: str) -> Expense:
     return Expense(amount=amount, category=category)
 
 
-def add_expense(message):
+def add_expense(message) -> Message:
     user_id = message.from_user.id
     user_name = message.from_user.first_name
     date = datetime.date.today()
@@ -53,21 +51,19 @@ def add_expense(message):
     return Message(user_id=user_id, user_name=user_name, message_date=date, expense=expense, raw_message=message.text)
 
 
-def get_month_statistics():
+def get_month_statistics() -> (str, List):
     values = get_all_values(budget_sheet)
-    month_name = get_current_month_str()
-    statistic = []
-    for value in values:
-        statistic.append(value['Category'] + ': ' + str(value[month_name]) + ' из ' + str(value['Limit']))
+    month_name = get_current_month_name()
+    statistic = [f"{value['Category']}: {str(value[month_name])}руб. из {str(value['Limit'])}руб." for value in values]
     return month_name, statistic
 
 
-def get_last_ten_expenses():
+def get_last_ten_expenses() -> List:
     last_transaction = get_range_of_values(transaction_sheet, 'A2:E11')
     last_expenses = [Expense(amount=transaction[0], category=transaction[1]) for transaction in last_transaction]
     return last_expenses
 
-values = get_all_values(budget_sheet)
+
 
 
 

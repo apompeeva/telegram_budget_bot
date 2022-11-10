@@ -23,15 +23,17 @@ async def send_welcome(message: types.Message):
         "Добавить расход: 250 такси\n"
         "За текущий месяц: /month\n"
         "Последние внесённые расходы: /last\n"
-        "Просмотреть категории: /categories")
+        "Просмотреть категории: /categories"
+    )
 
 
 @dp.message_handler(lambda message: message.text.startswith('/del'))
 async def del_expense(message: types.Message):
     """Удаляет расход"""
-    expense = expenses.parse_message(message.text[4::])
+    message_text = message.text[4:]
+    expense = expenses.parse_message(message_text)
     sheets.delete_expense_from_table(expense)
-    await message.answer(f"Удалил {message.text[4::]}")
+    await message.answer(f"Удалил {message_text}")
 
 
 @dp.message_handler(commands=['last'])
@@ -46,8 +48,7 @@ async def get_last_ten_transaction(message: types.Message):
         f"{expense.amount} руб. на {expense.category} — нажми "
         f"/del{expense.amount}{expense.category} для удаления"
         for expense in last_expenses]
-    answer_message = "Последние сохранённые траты:\n\n* " + "\n\n* " \
-        .join(last_expenses_rows)
+    answer_message = "Последние сохранённые траты:\n\n* " + "\n\n* ".join(last_expenses_rows)
     await message.answer(answer_message)
 
 

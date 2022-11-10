@@ -14,11 +14,14 @@ class Category:
 
     def get_category_data(self):
         "Возвращает информацию о категррии в виде строки"
-        return '\n' + self.code_name + ' - ' + self.description + '\n' + ', '.join([str(elem) for elem in self.aliases])
+
+        return f"""
+               {self.code_name}-{self.description}
+               {",".join([str(elem) for elem in self.aliases])}
+               """
 
 
 class Categories:
-
     def __init__(self):
         self._categories = []
         categories = get_all_values(categories_sheet)
@@ -31,15 +34,17 @@ class Categories:
 
     def get_category(self, category_name: str) -> Category:
         """Возвращает категорию по одному из её алиасов."""
-        finded = None
+        found = None
         other_category = None
+
         for category in self._categories:
             if category.code_name == "Other":
                 other_category = category
             for alias in category.aliases:
                 if category_name in alias:
-                    finded = category
-        if not finded:
-            finded = other_category
-        return finded
+                    found = category
+
+        if not found:
+            found = other_category
+        return found
 

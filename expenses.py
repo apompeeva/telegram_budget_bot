@@ -30,10 +30,16 @@ class Message(NamedTuple):
         return self.message_date.strftime('%d.%m.%Y')
 
     def get_message_data(self):
-        return [self.expense.get_amount(), self.expense.get_category(), self.message_date_str(), self.user_name, self.raw_message]
+        return [
+            self.expense.get_amount(),
+            self.expense.get_category(),
+            self.message_date_str(),
+            self.user_name,
+            self.raw_message
+        ]
 
 
-# TO DO: добавить исключение, если сообщение распозналось некорректно
+# TODO: добавить исключение, если сообщение распозналось некорректно
 def parse_message(raw_message: str) -> Expense:
     match = re.match(r'(\d+) *(.+)', raw_message)
 

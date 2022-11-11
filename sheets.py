@@ -44,12 +44,11 @@ def get_cell_address(category: str) -> Tuple[int, int]:
 
 def add_expense_to_table(expense):
     cell_address = get_cell_address(expense.get_category())
-    current_value = get_value(cell_address)
     try:
-        new_data = int(current_value) + int(expense.get_amount())
-    except TypeError:
-        print("Какая то дичь с типами")
+        current_value = int(get_value(cell_address))
+    except ValueError:
         raise
+    new_data = current_value + int(expense.get_amount())
     budget_sheet.update_cell(*cell_address, str(new_data))
 
 

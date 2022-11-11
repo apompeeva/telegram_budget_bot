@@ -75,8 +75,12 @@ async def add_expense(message: types.Message):
     except exceptions.IncorrectMessage as e:
         await message.answer(str(e))
         return
+    try:
+        sheets.add_expense_to_table(expense_message.expense)
+    except ValueError:
+        await message.answer("Не удалось внести значение в таблицу, ошибка в данных ячейки.")
+        return
     sheets.add_transaction(expense_message)
-    sheets.add_expense_to_table(expense_message.expense)
     await message.answer(expense_message.expense.get_answer())
 
 

@@ -1,5 +1,6 @@
 import re
 import datetime
+import exceptions
 from categories import Category, Categories
 from typing import NamedTuple, List
 from sheets import get_all_values, get_current_month_name, budget_sheet, get_range_of_values, transaction_sheet
@@ -39,9 +40,11 @@ class Message(NamedTuple):
         ]
 
 
-# TODO: добавить исключение, если сообщение распозналось некорректно
 def parse_message(raw_message: str) -> Expense:
     match = re.match(r'(\d+) *(.+)', raw_message)
+
+    if not match or not match.group(1) or not match.group(2):
+        raise exceptions.IncorrectMessage("Не удалось распознать сообщение, попробуйте снова, например 100 продукты.")
 
     amount = float(match.group(1).replace(" ", ""))
     category = Categories().get_category(match.group(2))

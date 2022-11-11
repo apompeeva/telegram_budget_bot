@@ -2,6 +2,7 @@ import os
 from aiogram import Bot, Dispatcher, executor, types
 from middleware import AccessMiddleware
 import expenses
+import exceptions
 import sheets
 from categories import Categories
 
@@ -69,7 +70,11 @@ async def get_all_categories(message: types.Message):
 @dp.message_handler()
 async def add_expense(message: types.Message):
     """Добавляет новый расход"""
-    expense_message = expenses.add_expense(message)
+    try:
+        expense_message = expenses.add_expense(message)
+    except exceptions.IncorrectMessage as e:
+        await message.answer(str(e))
+        return
     sheets.add_transaction(expense_message)
     sheets.add_expense_to_table(expense_message.expense)
     await message.answer(expense_message.expense.get_answer())
